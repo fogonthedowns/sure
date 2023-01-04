@@ -13,7 +13,7 @@ NY_TAX = 0.02
 NY_FLOOD = 0.1
 
 class Quote:
-    def __init__(self, name, coverage_type, state, has_pet, flood_coverage):
+    def __init__(self, name, coverage_type, state, has_pet, flood_coverage, uuidstr=None):
         required_attributes = [
             ("name", name),
             ("coverage_type", coverage_type),
@@ -25,7 +25,11 @@ class Quote:
             if attr_value is None:
                 raise ValueError("'{}' is a required attribute for Quote".format(attr_name))
 
-        self.uuid = uuid.uuid4()
+        print(uuidstr)
+        if uuidstr == None:
+            self.uuid = uuid.uuid4()
+        else:
+            self.uuid = uuidstr
         self.name = name
         self.coverage_type = coverage_type
         self.state = state
@@ -35,9 +39,17 @@ class Quote:
     def save(self):
         connection = create_connection()
         cursor = connection.cursor()
+        
+        print(self.has_pet)
+        print(self.flood_coverage)
+        # Convert has_pet and flood_coverage to integers
+        has_pet_int = 1 if self.has_pet == True else 0
+        flood_coverage_int = 1 if self.flood_coverage == True else 0
+        print(has_pet_int)
+        print(flood_coverage_int)
 
         sql = "INSERT INTO quotes (uuid, name, coverage_type, state, has_pet, flood_coverage) VALUES (%s, %s, %s, %s, %s, %s)"
-        values = (str(self.uuid), self.name, self.coverage_type, self.state, self.has_pet, self.flood_coverage)
+        values = (str(self.uuid), self.name, self.coverage_type, self.state, has_pet_int, flood_coverage_int)
         try:
             cursor.execute(sql, values)
         except Exception as e:
@@ -47,7 +59,7 @@ class Quote:
         connection.commit()
         connection.close()
 
-        return str(self.id)
+        return str(self.uuid)
 
     @classmethod
     def get_by_uuid(cls, uuid):
@@ -62,11 +74,11 @@ class Quote:
             return None
 
         result = cursor.fetchone()
-
+        print(result)
         if result is None:
             return None
 
-        quote = cls(*result)
+        quote = cls(result[2], result[3], result[4], result[5], result[6], result[1])
         connection.close()
 
         return quote

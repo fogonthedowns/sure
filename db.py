@@ -1,17 +1,25 @@
 import mysql.connector
 
 def create_connection():
-    try:
-        cnx = mysql.connector.connect(
-            user="root",
-            password="",
-            host="localhost",
-            database="acme_homeowners_insurance"
-        )
-        return cnx
-    except mysql.connector.Error as err:
-        print("Error creating connection:", err)
-        return None
+    connection = mysql.connector.connect(
+        host="localhost",
+        user="root"
+    )
+    cursor = connection.cursor()
+
+    # Create the database if it does not exist
+    cursor.execute("CREATE DATABASE IF NOT EXISTS acme_homeowners_insurance")
+    connection.commit()
+
+    # Connect to the database
+    connection = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        database="acme_homeowners_insurance"
+    )
+
+    return connection
+
 
 def create_table(cnx):
     try:
