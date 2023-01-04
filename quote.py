@@ -13,9 +13,11 @@ TX_FLOOD = 0.5
 NY_TAX = 0.02
 NY_FLOOD = 0.1
 
+
 class Quote:
-    def __init__(self, name, coverage_type, state, has_pet, flood_coverage, uuidstr=None): 
-        self.validate_input(name, coverage_type, state, has_pet, flood_coverage, uuidstr)
+    def __init__(self, name, coverage_type, state, has_pet, flood_coverage, uuidstr=None):
+        self.validate_input(name, coverage_type, state,
+                            has_pet, flood_coverage, uuidstr)
         if uuidstr == None:
             self.uuid = uuid.uuid4()
         else:
@@ -26,7 +28,7 @@ class Quote:
         self.state = state
         self.has_pet = has_pet
         self.flood_coverage = flood_coverage
-    
+
     def validate_input(self, name, coverage_type, state, has_pet, flood_coverage, uuidstr):
         required_attributes = [
             ("name", name),
@@ -38,8 +40,9 @@ class Quote:
 
         for attr_name, attr_value in required_attributes:
             if attr_value is None:
-                raise ValueError("'{}' is a required attribute for Quote".format(attr_name))
-        
+                raise ValueError(
+                    "'{}' is a required attribute for Quote".format(attr_name))
+
         # no need to validate further than this if class __init__ is invoked by Retrieve
         if uuidstr is not None:
             return
@@ -54,18 +57,20 @@ class Quote:
         if not isinstance(flood_coverage, bool):
             raise ValueError("'flood_coverage' must be a boolean")
         if coverage_type.lower() not in ["basic", "premium"]:
-            raise ValueError("'coverage_type' must be either 'basic' or 'premium'")
+            raise ValueError(
+                "'coverage_type' must be either 'basic' or 'premium'")
 
     def save(self):
         connection = create_connection()
         cursor = connection.cursor()
-        
+
         # Convert has_pet and flood_coverage to integers
         has_pet_int = 1 if self.has_pet == True else 0
         flood_coverage_int = 1 if self.flood_coverage == True else 0
-        
+
         sql = "INSERT INTO quotes (uuid, name, coverage_type, state, has_pet, flood_coverage) VALUES (%s, %s, %s, %s, %s, %s)"
-        values = (str(self.uuid), self.name, self.coverage_type, self.state, has_pet_int, flood_coverage_int)
+        values = (str(self.uuid), self.name, self.coverage_type,
+                  self.state, has_pet_int, flood_coverage_int)
         try:
             cursor.execute(sql, values)
         except Exception as e:
@@ -76,7 +81,7 @@ class Quote:
         connection.close()
 
         return str(self.uuid)
-    
+
     @classmethod
     def get_by_uuid(cls, uuid):
         # uuid validations
@@ -84,12 +89,13 @@ class Quote:
             raise ValueError("'uuid' must be a valid UUID")
         pattern = '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$'
         if uuid is not None and not re.match(pattern, uuid):
-            raise ValueError("'uuid' must be a valid UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'")
-        
+            raise ValueError(
+                "'uuid' must be a valid UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'")
+
         # connect to the db
         connection = create_connection()
         cursor = connection.cursor()
-        
+
         # query
         sql = "SELECT * FROM quotes WHERE uuid=%s"
         try:
@@ -102,7 +108,8 @@ class Quote:
         if result is None:
             return None
 
-        quote = cls(result[2], result[3], result[4], result[5], result[6], result[1])
+        quote = cls(result[2], result[3], result[4],
+                    result[5], result[6], result[1])
         connection.close()
 
         return quote
@@ -113,11 +120,12 @@ class Quote:
         elif self.coverage_type == "PREMIUM":
             cost = PREMIUM_RATE
         else:
-            raise ValueError("Invalid coverage type: {}".format(self.coverage_type))
-        
+            raise ValueError(
+                "Invalid coverage type: {}".format(self.coverage_type))
+
         if self.has_pet:
             cost += PET_PREMIUM
-         
+
         if self.state == "CA":
             tax_rate = CA_TAX
             if self.flood_coverage:
@@ -132,15 +140,13 @@ class Quote:
                 cost += cost * NY_FLOOD
         else:
             raise ValueError("Invalid state: {}".format(self))
-         
+
         return cost
 
     @classmethod
-    def rater(cls,uuid):
+    def rater(cls, uuid):
         quote = cls.get_by_uuid(uuid)
         cost = quote.calculate_cost()
         return {
             "Monthly Total": cost,
         }
-
-

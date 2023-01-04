@@ -4,16 +4,19 @@ import json
 import quote
 from quote import Quote
 
+
 def main():
     # Set up the argument parser
-    parser = argparse.ArgumentParser(description='Create or retrieve a quote from the Acme homeowners insurance database')
+    parser = argparse.ArgumentParser(
+        description='Create or retrieve a quote from the Acme homeowners insurance database')
     # Add the action argument (either 'create' or 'retrieve')
-    parser.add_argument('action', type=str, choices=['create', 'retrieve'], help='Action to perform')
+    parser.add_argument('action', type=str, choices=[
+                        'create', 'retrieve'], help='Action to perform')
     # Add the JSON data argument
-    parser.add_argument('data', type=json.loads, help='JSON data for the quote')
+    parser.add_argument('data', type=json.loads,
+                        help='JSON data for the quote')
     # Parse the arguments
     args = parser.parse_args()
-
 
     # Check the action
     if args.action == 'create':
@@ -27,6 +30,6 @@ def main():
         quote = Quote.rater(**args.data)
         print(f'Retrieved quote: {q.__dict__} with cost: {quote}')
 
+
 if __name__ == '__main__':
     main()
-
