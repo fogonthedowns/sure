@@ -139,7 +139,7 @@ class Quote:
             if self.flood_coverage:
                 cost += cost * NY_FLOOD
         else:
-            raise ValueError("Invalid state: {}".format(self))
+            raise ValueError("Invalid state. State not yet supported: {}".format(self))
 
         return cost
 
@@ -148,5 +148,5 @@ class Quote:
         quote = cls.get_by_uuid(uuid)
         cost = quote.calculate_cost()
         return {
-            "Monthly Total": cost,
+            "monthly_total": cost,
         }

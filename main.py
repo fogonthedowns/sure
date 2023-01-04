@@ -28,7 +28,7 @@ def main():
         # Retrieve the quote from the database
         q = Quote.get_by_uuid(**args.data)
         quote = Quote.rater(**args.data)
-        print(f'Retrieved quote: {q.__dict__} with cost: {quote}')
+        print(f'Retrieved quote: {q.__dict__} \nwith cost: {quote}')
 
 
 if __name__ == '__main__':
