@@ -18,13 +18,14 @@ def main():
     # Check the action
     if args.action == 'create':
         # Create the quote and save it to the database
-        q = quote.Quote(**args.data)
+        q = Quote(**args.data)
         uuid = q.save()
         print(f'Quote created with UUID: {uuid}')
     elif args.action == 'retrieve':
         # Retrieve the quote from the database
         q = Quote.get_by_uuid(**args.data)
-        print(f'Retrieved quote: {q.__dict__}')
+        quote = Quote.rater(**args.data)
+        print(f'Retrieved quote: {q.__dict__} with cost: {quote}')
 
 if __name__ == '__main__':
     main()
