@@ -4,9 +4,9 @@ Dependencies:
 2. ```pip3 install -r requirements.txt```
 3. Set the following env vars:
 ```
-    export MYSQL_USER = your_user
-    export MYSQL_HOST = your_host
-    export MYSQL_PASSWORD = your_password
+export MYSQL_USER = your_user
+export MYSQL_HOST = your_host
+export MYSQL_PASSWORD = your_password
 ```
 --------------------------------------------------
 Setup Database:
