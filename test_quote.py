@@ -45,7 +45,7 @@ class TestQuote(unittest.TestCase):
         # Test state does not exist in db
         # with self.assertRaises(ValueError):
         #    Quote("John Smith", "Basic", "UT", True, True)
-        
+
         # Test uuid generation
         quote = Quote("John Smith", "Basic", "CA", True, True)
         self.assertIsInstance(quote.uuid, uuid.UUID)

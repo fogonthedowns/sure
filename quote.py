@@ -6,6 +6,8 @@ STATES = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID'
           'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY']
 
 
+# The Rate class makes adding new states an easy task
+# Rates for each state are stored in the mysql rates table
 class Rate:
     def __init__(self, state, state_tax_percent, flood_percent, default_cost, premium_cost, pet_cost):
         self.validate(state, state_tax_percent, flood_percent,
@@ -37,7 +39,7 @@ class Rate:
         if pet_cost is not None and (not isinstance(pet_cost, float) or pet_cost <= 0):
             raise ValueError(
                 "'pet_cost' must be a float with up to 4 decimal places and greater than 0")
-   
+
     @classmethod
     def load_rates_by_state(cls, state):
         cnx = create_connection()
@@ -67,9 +69,8 @@ class Rate:
             rows = cursor.fetchall()
             rates = []
             for row in rows:
-                print("foo")
-                print(row)
-                rate = cls(row[1], float(row[2]), float(row[3]), float(row[4]), float(row[5]), float(row[6]))
+                rate = cls(row[1], float(row[2]), float(row[3]),
+                           float(row[4]), float(row[5]), float(row[6]))
                 rates.append(rate)
             return rates
         except Error as e:
@@ -77,6 +78,43 @@ class Rate:
         finally:
             cursor.close()
             cnx.close()
+
+    @classmethod
+    def update_rate_by_state(cls, state, state_tax_percent, flood_percent, default_rate, premium_rate, pet_rate):
+        cnx = create_connection()
+        cursor = cnx.cursor()
+        try:
+            cursor.execute(
+                "UPDATE rates SET state_tax_percent=%s, flood_percent=%s, default_rate=%s, premium_rate=%s, pet_rate=%s WHERE state=%s",
+                (state_tax_percent, flood_percent,
+                 default_rate, premium_rate, pet_rate, state)
+            )
+            cnx.commit()
+        except Exception as e:
+            print(e)
+            cnx.rollback()
+        finally:
+            cursor.close()
+            cnx.close()
+
+    @classmethod
+    def create_rate(cls, state, state_tax_percent, flood_percent, default_rate, premium_rate, pet_rate):
+        cnx = create_connection()
+        cursor = cnx.cursor()
+        try:
+            cursor.execute(
+                "INSERT INTO rates (state, state_tax_percent, flood_percent, default_rate, premium_rate, pet_rate) VALUES (%s, %s, %s, %s, %s, %s)",
+                (state, state_tax_percent, flood_percent,
+                 default_rate, premium_rate, pet_rate)
+            )
+            cnx.commit()
+        except Exception as e:
+            print(e)
+            cnx.rollback()
+        finally:
+            cursor.close()
+            cnx.close()
+
 
 class Quote:
     def __init__(self, name, coverage_type, state, has_pet, flood_coverage, uuidstr=None):
@@ -180,11 +218,11 @@ class Quote:
 
     def calculate_cost(self):
         rate = Rate.load_rates_by_state(self.state)
-        
+
         if rate == None:
             raise ValueError(
                 "Invalid state. State not yet supported: {}".format(self))
-        
+
         if self.coverage_type == "BASIC":
             cost = rate.default_cost
         elif self.coverage_type == "PREMIUM":
@@ -195,10 +233,10 @@ class Quote:
 
         if self.has_pet:
             cost += rate.pet_cost
-        
+
         if self.flood_coverage:
             cost += cost * rate.flood_percent
-        
+
         tax_rate = rate.state_tax_percent
         tax = tax_rate * cost
         total = cost + tax

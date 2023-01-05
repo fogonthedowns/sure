@@ -7,7 +7,7 @@ user = os.getenv("MYSQL_USER", "root")
 
 
 def create_connection():
-    
+
     connection = mysql.connector.connect(
         host=host,
         password=password,
@@ -49,8 +49,9 @@ def create_table(cnx):
     except mysql.connector.Error as err:
         print("Error creating table:", err)
 
+
 def create_rate_table(cnx):
-    try: 
+    try:
         cursor = cnx.cursor()
 
         sql = """
@@ -85,7 +86,6 @@ def insert_initial_data(cnx):
     NY_TAX = 0.02
     NY_FLOOD = 0.1
 
-
     try:
         rates_data = [
             ("CA", CA_TAX, CA_FLOOD, BASIC_RATE, PREMIUM_RATE, PET_PREMIUM),
@@ -100,6 +100,7 @@ def insert_initial_data(cnx):
     except Exception as e:
         print("Error inserting initial data: {}".format(e))
         cnx.rollback()
+
 
 def delete_all_rates(cnx):
     cursor = cnx.cursor()
