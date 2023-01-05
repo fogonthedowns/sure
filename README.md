@@ -1,3 +1,9 @@
+```
+"--------------------------------------------------------------------------------------------------------------"
+"| Thank you for considering me for this opportunity, I am grateful for the opportunity to interview with you |"
+"--------------------------------------------------------------------------------------------------------------"
+```
+
 Dependencies: 
 
 1. ensure you have a mysql instance installed
