@@ -1,9 +1,17 @@
 import mysql.connector
+import os
+
+host = os.getenv("MYSQL_HOST", "localhost")
+password = os.getenv("MYSQL_PASSWORD", "")
+user = os.getenv("MYSQL_USER", "root")
+
 
 def create_connection():
+    
     connection = mysql.connector.connect(
-        host="localhost",
-        user="root"
+        host=host,
+        password=password,
+        user=user
     )
     cursor = connection.cursor()
 
@@ -13,8 +21,9 @@ def create_connection():
 
     # Connect to the database
     connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
+        host=host,
+        password=password,
+        user=user,
         database="acme_homeowners_insurance"
     )
 

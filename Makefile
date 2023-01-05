@@ -12,13 +12,25 @@ HELP_FORMAT = \
 
 help:   ##@Miscellaneous   Show this help.
 	@echo
-	@echo "Thank you for reviewing this code"
+	@echo
+	@echo "--------------------------------------------------------------------------------------------------------------"
+	@echo "| Thank you for considering me for this opportunity, I am grateful for the opportunity to interview with you |"
+	@echo "--------------------------------------------------------------------------------------------------------------"
+	@echo
+	@echo "    The first thing you'll need to do is ensure you have mysql and all of the dependencies installed. Check out the README."
+	@echo "    set the following environment variables: MYSQL_USER, MYSQL_HOST, and MYSQL_PASSWORD. These are read in db.py"
 	@echo
 	@echo
-	@echo "python3 main.py create '{\"name\": \"Jane Smith\", \"coverage_type\": \"basic\", \"state\": \"CA\", \"has_pet\": false, \"flood_coverage\": true}'"
 	@echo
 	@echo
-	@echo "python3 main.py retrieve '{\"uuid\": \"dc4aab71-2d0b-4cf3-938c-caa11f2bc24a\"}'"
+	@echo "create Quote:"
+	@echo
+	@echo "    python3 main.py create '{\"name\": \"Jane Smith\", \"coverage_type\": \"basic\", \"state\": \"CA\", \"has_pet\": false, \"flood_coverage\": true}'"
+	@echo
+	@echo
+	@echo "retreive Quote:"
+	@echo
+	@echo "    python3 main.py retrieve '{\"uuid\": \"dc4aab71-2d0b-4cf3-938c-caa11f2bc24a\"}'"
 	@echo 
 	@echo
 

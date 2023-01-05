@@ -1,13 +1,16 @@
 Dependencies: 
 
 pip3 install -r requirements.txt
-mysql
+ensure you have a mysql instance installed
+you need the following env vars:
 
+MYSQL_USER
+MYSQL_HOST
+MYSQL_PASSWORD
 
 Setup Database:
 
 make setup
-
 
 
 Create:
@@ -20,6 +23,6 @@ Retreive:
 python3 main.py retrieve '{"uuid": "7e4e8003-3093-4ac6-9fff-ac25fbd0f040"}'
 
 
-Test:
+Tests:
 
 python3 -m unittest test_quote.py
