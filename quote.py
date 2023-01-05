@@ -212,7 +212,7 @@ class Quote:
         
         tax_rate = rate.state_tax_percent
         tax = tax_rate * cost
-        total = cost + cost
+        total = cost + tax
 
         return {"subtotal": cost, "tax": tax, "total": total}
 
