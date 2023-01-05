@@ -2,7 +2,7 @@ import argparse
 import json
 
 import quote
-from quote import Quote
+from quote import Quote, Rate
 from db import delete_all_rates, insert_initial_data, create_connection, create_table, create_rate_table
 
 
@@ -12,7 +12,7 @@ def main():
         description='Create or retrieve a quote from the Acme homeowners insurance database')
     # Add the action argument (either 'create' or 'retrieve')
     parser.add_argument('action', type=str, choices=[
-                        'create', 'retrieve', 'setup'], help='Action to perform')
+                        'create', 'retrieve', 'setup', 'update_rate', 'create_rate'], help='Action to perform')
     # Add the JSON data argument
     parser.add_argument('data', type=json.loads,
                         help='JSON data for the quote')
@@ -38,6 +38,12 @@ def main():
         create_rate_table(conn)
         delete_all_rates(conn)
         insert_initial_data(conn)
+    elif args.action == 'update_rate':
+        Rate.update_rate_by_state(**args.data)
+        print('updated rate')
+    elif args.action == 'create_rate':
+        Rate.create_rate(**args.data)
+        print('created rate')
 
 
 if __name__ == '__main__':
