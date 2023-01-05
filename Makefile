@@ -33,6 +33,21 @@ help:   ##@Miscellaneous   Show this help.
 	@echo "    python3 main.py retrieve '{\"uuid\": \"dc4aab71-2d0b-4cf3-938c-caa11f2bc24a\"}'"
 	@echo 
 	@echo
+	@echo "Add State:"
+	@echo
+	@echo "    python3 main.py create_rate '{\"state\": \"UT\", \"state_tax_percent\": 0.085, \"flood_percent\": 0.001, \"default_rate\":20, \"premium_rate\":40, \"pet_rate\":20}'"
+	@echo
+	@echo
+	@echo "Update State:"
+	@echo
+	@echo "    python3 main.py update_rate '{\"state\": \"UT\", \"state_tax_percent\": 0.085, \"flood_percent\": 0.001, \"default_rate\":20, \"premium_rate\":40, \"pet_rate\":20}'"
+	@echo
+	@echo
+	@echo "Update State Rates:"
+	@echo
+	@echo "    python3 main.py retrieve '{\"uuid\": \"dc4aab71-2d0b-4cf3-938c-caa11f2bc24a\"}'"
+	@echo 
+	@echo
 
 	@perl -e '$(HELP_FORMAT)' $(MAKEFILE_LIST)
 
