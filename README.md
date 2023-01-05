@@ -11,11 +11,11 @@ Dependencies:
 --------------------------------------------------
 Setup Database:
 
-make setup
+    make setup
 
 or 
 
-python3 main.py setup '{}'
+    python3 main.py setup '{}'
 
 --------------------------------------------------
 Create:
