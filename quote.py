@@ -2,17 +2,6 @@ import uuid
 import re
 from db import create_connection, create_table
 
-# magic numbers
-BASIC_RATE = 20
-PET_PREMIUM = 20
-PREMIUM_RATE = 40
-CA_TAX = 0.01
-CA_FLOOD = 0.02
-TX_TAX = 0.005
-TX_FLOOD = 0.5
-NY_TAX = 0.02
-NY_FLOOD = 0.1
-
 STATES = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS',
           'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY']
 
