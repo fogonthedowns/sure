@@ -7,19 +7,19 @@ class TestQuote(unittest.TestCase):
     def test_calculate_cost(self):
         quote = Quote("John Smith", "Basic", "CA", True, True)
         cost = quote.calculate_cost()
-        self.assertAlmostEqual(cost, 40.80, places=2)
+        self.assertAlmostEqual(cost["subtotal"], 40.80, places=2)
 
         quote = Quote("Jane Doe", "Premium", "CA", True, True)
         cost = quote.calculate_cost()
-        self.assertAlmostEqual(cost, 61.20, places=2)
+        self.assertAlmostEqual(cost["subtotal"], 61.20, places=2)
 
         quote = Quote("Bob Johnson", "Premium", "NY", True, False)
         cost = quote.calculate_cost()
-        self.assertAlmostEqual(cost, 60.00, places=2)
+        self.assertAlmostEqual(cost["subtotal"], 60.00, places=2)
 
         quote = Quote("Alice Johnson", "Basic", "TX", False, True)
         cost = quote.calculate_cost()
-        self.assertAlmostEqual(cost, 30.00, places=2)
+        self.assertAlmostEqual(cost["subtotal"], 30.00, places=2)
 
     def test_validations(self):
         # Test coverage_type validation
@@ -42,6 +42,10 @@ class TestQuote(unittest.TestCase):
         with self.assertRaises(ValueError):
             Quote("John Smith", "Basic", "CA", True, "yes")
 
+        # Test state does not exist in db
+        # with self.assertRaises(ValueError):
+        #    Quote("John Smith", "Basic", "UT", True, True)
+        
         # Test uuid generation
         quote = Quote("John Smith", "Basic", "CA", True, True)
         self.assertIsInstance(quote.uuid, uuid.UUID)

@@ -16,7 +16,12 @@ help:   ##@Miscellaneous   Show this help.
 	@echo
 	@echo
 	@echo "python3 main.py create '{\"name\": \"Jane Smith\", \"coverage_type\": \"basic\", \"state\": \"CA\", \"has_pet\": false, \"flood_coverage\": true}'"
+	@echo
+	@echo
+	@echo "python3 main.py retrieve '{\"uuid\": \"dc4aab71-2d0b-4cf3-938c-caa11f2bc24a\"}'"
 	@echo 
+	@echo
+
 	@perl -e '$(HELP_FORMAT)' $(MAKEFILE_LIST)
 
 .PHONY: test

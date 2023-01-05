@@ -13,10 +13,14 @@ TX_FLOOD = 0.5
 NY_TAX = 0.02
 NY_FLOOD = 0.1
 
+STATES = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS',
+          'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY']
+
 
 class Rate:
-    def __init__(self, state, state_tax_percent, flood_percent, default_cost=None, premium_cost=None, pet_cost=None):
-        self.validate(state, state_tax_percent, flood_percent, default_cost, premium_cost, pet_cost)
+    def __init__(self, state, state_tax_percent, flood_percent, default_cost, premium_cost, pet_cost):
+        self.validate(state, state_tax_percent, flood_percent,
+                      default_cost, premium_cost, pet_cost)
         self.state = state
         self.state_tax_percent = state_tax_percent
         self.flood_percent = flood_percent
@@ -30,16 +34,60 @@ class Rate:
         if state not in STATES:
             raise ValueError("'state' must be a valid 2 letter state")
         if not isinstance(state_tax_percent, float) or state_tax_percent < 0:
-            raise ValueError("'state_tax_percent' must be a float with up to 4 decimal places and greater than or equal to 0")
+            raise ValueError(
+                "'state_tax_percent' must be a float with up to 4 decimal places and greater than or equal to 0")
         if not isinstance(flood_percent, float) or flood_percent < 0:
-            raise ValueError("'flood_percent' must be a float with up to 4 decimal places and greater than or equal to 0")
+            raise ValueError(
+                "'flood_percent' must be a float with up to 4 decimal places and greater than or equal to 0")
         if default_cost is not None and (not isinstance(default_cost, float) or default_cost <= 0):
-            raise ValueError("'default_cost' must be a float with up to 4 decimal places and greater than 0")
+            raise ValueError(
+                "'default_cost' must be a float with up to 4 decimal places and greater than 0")
         if premium_cost is not None and (not isinstance(premium_cost, float) or premium_cost <= 0):
-            raise ValueError("'premium_cost' must be a float with up to 4 decimal places and greater than 0")
+            raise ValueError(
+                "'premium_cost' must be a float with up to 4 decimal places and greater than 0")
         if pet_cost is not None and (not isinstance(pet_cost, float) or pet_cost <= 0):
-            raise ValueError("'pet_cost' must be a float with up to 4 decimal places and greater than 0")
+            raise ValueError(
+                "'pet_cost' must be a float with up to 4 decimal places and greater than 0")
+   
+    @classmethod
+    def load_rates_by_state(cls, state):
+        cnx = create_connection()
+        cursor = cnx.cursor()
+        try:
+            cursor.execute(
+                "SELECT state, state_tax_percent, flood_percent, default_rate, premium_rate, pet_rate FROM rates WHERE state=%s",
+                (state,)
+            )
+            rows = cursor.fetchall()
+            if not rows:
+                raise ValueError(f"No rates found for state '{state}'")
+            row = rows[0]
+            return cls(row[0], float(row[1]), float(row[2]), float(row[3]), float(row[4]), float(row[5]))
+        finally:
+            cursor.close()
+            cnx.close()
 
+    @classmethod
+    def load_all_rates(cls):
+        cnx = create_connection()
+        cursor = cnx.cursor()
+        query = "SELECT * FROM rates"
+
+        try:
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            rates = []
+            for row in rows:
+                print("foo")
+                print(row)
+                rate = cls(row[1], float(row[2]), float(row[3]), float(row[4]), float(row[5]), float(row[6]))
+                rates.append(rate)
+            return rates
+        except Error as e:
+            print(e)
+        finally:
+            cursor.close()
+            cnx.close()
 
 class Quote:
     def __init__(self, name, coverage_type, state, has_pet, flood_coverage, uuidstr=None):
@@ -142,33 +190,31 @@ class Quote:
         return quote
 
     def calculate_cost(self):
+        rate = Rate.load_rates_by_state(self.state)
+        
+        if rate == None:
+            raise ValueError(
+                "Invalid state. State not yet supported: {}".format(self))
+        
         if self.coverage_type == "BASIC":
-            cost = BASIC_RATE
+            cost = rate.default_cost
         elif self.coverage_type == "PREMIUM":
-            cost = PREMIUM_RATE
+            cost = rate.premium_cost
         else:
             raise ValueError(
                 "Invalid coverage type: {}".format(self.coverage_type))
 
         if self.has_pet:
-            cost += PET_PREMIUM
+            cost += rate.pet_cost
+        
+        if self.flood_coverage:
+            cost += cost * rate.flood_percent
+        
+        tax_rate = rate.state_tax_percent
+        tax = tax_rate * cost
+        total = cost + cost
 
-        if self.state == "CA":
-            tax_rate = CA_TAX
-            if self.flood_coverage:
-                cost += cost * CA_FLOOD
-        elif self.state == "TX":
-            tax_rate = TX_TAX
-            if self.flood_coverage:
-                cost += cost * TX_FLOOD
-        elif self.state == "NY":
-            tax_rate = NY_TAX
-            if self.flood_coverage:
-                cost += cost * NY_FLOOD
-        else:
-            raise ValueError("Invalid state. State not yet supported: {}".format(self))
-
-        return cost
+        return {"subtotal": cost, "tax": tax, "total": total}
 
     @classmethod
     def rater(cls, uuid):
