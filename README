@@ -1,6 +1,19 @@
+Dependencies: 
+
+pip3 install -r requirements.txt
+mysql
+
+
+Setup Database:
+
+make setup
+
+
+
 Create:
 
 python3 main.py create '{"name": "Jane Smith", "coverage_type": "basic", "state": "CA", "has_pet": false, "flood_coverage": true}'
+
 
 Retreive:
 

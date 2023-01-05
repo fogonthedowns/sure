@@ -14,6 +14,33 @@ NY_TAX = 0.02
 NY_FLOOD = 0.1
 
 
+class Rate:
+    def __init__(self, state, state_tax_percent, flood_percent, default_cost=None, premium_cost=None, pet_cost=None):
+        self.validate(state, state_tax_percent, flood_percent, default_cost, premium_cost, pet_cost)
+        self.state = state
+        self.state_tax_percent = state_tax_percent
+        self.flood_percent = flood_percent
+        self.default_cost = default_cost
+        self.premium_cost = premium_cost
+        self.pet_cost = pet_cost
+
+    def validate(self, state, state_tax_percent, flood_percent, default_cost, premium_cost, pet_cost):
+        if not isinstance(state, str) or len(state) != 2:
+            raise ValueError("'state' must be a string with 2 characters")
+        if state not in STATES:
+            raise ValueError("'state' must be a valid 2 letter state")
+        if not isinstance(state_tax_percent, float) or state_tax_percent < 0:
+            raise ValueError("'state_tax_percent' must be a float with up to 4 decimal places and greater than or equal to 0")
+        if not isinstance(flood_percent, float) or flood_percent < 0:
+            raise ValueError("'flood_percent' must be a float with up to 4 decimal places and greater than or equal to 0")
+        if default_cost is not None and (not isinstance(default_cost, float) or default_cost <= 0):
+            raise ValueError("'default_cost' must be a float with up to 4 decimal places and greater than 0")
+        if premium_cost is not None and (not isinstance(premium_cost, float) or premium_cost <= 0):
+            raise ValueError("'premium_cost' must be a float with up to 4 decimal places and greater than 0")
+        if pet_cost is not None and (not isinstance(pet_cost, float) or pet_cost <= 0):
+            raise ValueError("'pet_cost' must be a float with up to 4 decimal places and greater than 0")
+
+
 class Quote:
     def __init__(self, name, coverage_type, state, has_pet, flood_coverage, uuidstr=None):
         self.validate_input(name, coverage_type, state,
